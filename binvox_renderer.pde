@@ -1,5 +1,3 @@
-import processing.opengl.*;
-
 int boxSize = 8;
 int dim = 32; // voxel grid size
 int maxIter = 0;
@@ -11,7 +9,7 @@ ArrayList<File> binvoxFiles = new ArrayList();
 Voxel voxel = new Binvox(boxSize, dim);
 
 void setup() {
-  size(500, 500, OPENGL);
+  size(500, 500, P3D);
   smooth();
   noStroke();
   frameRate(2);
