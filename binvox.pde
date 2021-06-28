@@ -1,26 +1,28 @@
 class Binvox implements Voxel {
   
   int boxSize;
-  int dim;
+  int dimX = 0;
+  int dimY = 0;
+  int dimZ = 0;
   int numVoxels;
-  int[][][] voxels;
+  int[][][] voxels = new int[0][0][0];
   float rotX = PI/2;
   float rotY = 0;
   float rotZ = 1.7*PI;
   
-  Binvox(int _boxSize, int _dim) {
+  Binvox(int _boxSize) { //, int _dim) {
     boxSize = _boxSize;
-    dim = _dim;
-    voxels = new int[dim][dim][dim];
+    //dim = _dim;
+    //voxels = new int[dim][dim][dim];
   }
   
   public void display() {
     stroke(96);
     strokeWeight(0.5);
 
-    for (int x = 0; x < dim; x++) {
-      for (int y = 0; y < dim; y++) {
-        for (int z = 0; z < dim; z++) {
+    for (int x = 0; x < dimX; x++) {
+      for (int y = 0; y < dimY; y++) {
+        for (int z = 0; z < dimZ; z++) {
           if (voxels[x][y][z]==1) {
             fill(255, 255, 255);
             pushMatrix();
@@ -28,7 +30,7 @@ class Binvox implements Voxel {
             rotateX(rotX);
             rotateY(rotY);
             rotateZ(rotZ);
-            translate((x-dim/2)*boxSize, (y-dim/2)*boxSize, (z-dim/2)*boxSize);
+            translate((x-dimX/2)*boxSize, (y-dimY/2)*boxSize, (z-dimZ/2)*boxSize);
             box(boxSize);
             popMatrix();
           }
@@ -41,8 +43,37 @@ class Binvox implements Voxel {
   public void read(String fileName) {
     byte bytesData[] = loadBytes(fileName);
     int readpos = 0;
-    
+    int dimpos = 0;
+   
     for (int i = 0; i < bytesData.length; i++) {
+      if (dimpos == 0 && (char) bytesData[i] == 'd' && (char) bytesData[i+1] == 'i' && (char) bytesData[i+2] == 'm') {
+        dimpos = i+4;
+        int dimCounter = 0;
+        String tempDim = "";
+        while (dimCounter < 3) {
+          if ((char) bytesData[dimpos] == ' ') {
+            dimCounter++;
+            switch (dimCounter) {
+              case 1:
+                dimX = int(tempDim);
+                break;
+              case 2:
+                dimY = int(tempDim);
+                break;
+              case 3:
+                dimZ = int(tempDim);
+                break;
+            }
+          } else {
+            tempDim += (char) bytesData[dimpos];
+            dimpos++;
+          }
+        }
+        
+        voxels = new int[dimX][dimY][dimZ];
+        println("found dimensions: " + dimX + " x " + dimY + " x " + dimZ);
+      }
+      
       if ((char)bytesData[i] == 'd' && (char)bytesData[i+1] == 'a' && (char)bytesData[i+2] == 't' && (char)bytesData[i+3] == 'a') {
         readpos = i + 5;
         break;
@@ -53,7 +84,7 @@ class Binvox implements Voxel {
     int x = 0, y = 0, z = 0;
     numVoxels = 0;
     
-    while (voxpos < dim * dim * dim) {
+    while (voxpos < dimX * dimY * dimZ) {
       int cell = bytesData[readpos] & 0xff;
       int sequence = bytesData[readpos+1] & 0xff;
       
@@ -64,17 +95,17 @@ class Binvox implements Voxel {
   
           z += 1;
   
-          if (z == dim) {
+          if (z == dimZ) {
             z = 0;
             y += 1;
           }
   
-          if (y == dim) {
+          if (y == dimY) {
             y = 0;
             x += 1;
           }
   
-          if (x == dim) {
+          if (x == dimX) {
             x = 0;
           }
         }
@@ -89,9 +120,9 @@ class Binvox implements Voxel {
     String[] faces = new String[numVoxels*12];
     int index = 0;
     
-    for (int x = 0; x < dim; x++) {
-      for (int y = 0; y < dim; y++) {
-        for (int z = 0; z < dim; z++) {
+    for (int x = 0; x < dimX; x++) {
+      for (int y = 0; y < dimY; y++) {
+        for (int z = 0; z < dimZ; z++) {
           if (voxels[x][y][z]==1) {
             vertices[24*index] = strVertex(y, x, z);
             vertices[24*index+1] = strVertex(y, x, z+1);

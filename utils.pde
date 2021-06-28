@@ -3,7 +3,7 @@ void folderSelected(File selection) {
     String absPath = selection.getAbsolutePath();
     listFiles(absPath, binvoxFiles);
     maxIter = binvoxFiles.size();
-    println("number of data: " + maxIter);
+    println("number of files: " + maxIter);
     loop();
   }
 }

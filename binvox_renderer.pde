@@ -1,12 +1,12 @@
 int boxSize = 8;
-int dim = 32; // voxel grid size
+//int dim = 32; // voxel grid size
 int maxIter = 0;
 int remaining;
 String fileName = "";
 boolean record = true;
 ArrayList<File> binvoxFiles = new ArrayList();
 
-Voxel voxel = new Binvox(boxSize, dim);
+Voxel voxel = new Binvox(boxSize);//, dim);
 
 void setup() {
   size(500, 500, P3D);
